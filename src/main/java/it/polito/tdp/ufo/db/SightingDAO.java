@@ -1,17 +1,21 @@
-package it.polito.tdp.ufo.dp;
-import java.util.*;
-import java.sql.*;
+package it.polito.tdp.ufo.db;
 
-public class testDB {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
-	public static void main(String[] args) {
-		
-		String jdbcURL = "jdbc:mysql://localhost/ufo_sightings?user=root&password=Gestionale1992" ;
+public class SightingDAO {
+	
+	public List<String> readShapes() {
+		Connection conn;
 		try {
-			Connection conn = DriverManager.getConnection(jdbcURL) ;
-			
+			conn = dbConnect.getConnection();
+		
 		//	Statement st =conn.createStatement();
-			// Query sena parametri!!
+			// Query senza parametri!!
 			String sql = "SELECT DISTINCT shape "
 					+ "from sighting "
 					+ "WHERE shape<>'' "
@@ -26,8 +30,17 @@ public class testDB {
 				formeUFO.add(forma) ;
 			}
 			st.close();
-			System.out.println(formeUFO);
-			
+			return formeUFO ;
+		}
+		catch (SQLException e) {
+			throw new RuntimeException("Database error in readdhape",e) ;
+		}
+	}
+	
+	public int CountByShapes(String shape) {
+		Connection conn;
+		try {
+			conn = dbConnect.getConnection();
 			String sql2 = "SELECT COUNT(*) AS cnt FROM sighting WHERE shape = ? " ;
 			String shapeScelta = "circle" ;
 			
@@ -39,14 +52,12 @@ public class testDB {
 			res2.first() ;
 			int count = res2.getInt("cnt") ;
 			st2.close();
-			
-			System.out.println("UFO di forma "+shapeScelta+" sono: "+count);
-			
 			conn.close();
+			return count ;
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new RuntimeException("Database error in countByShape",e) ;
 		}
 	}
+
 }
